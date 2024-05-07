@@ -6,7 +6,6 @@ on:
 
 jobs:
   build_container:
-    needs: check_release
     runs-on: ubuntu-20.04
     env:
       REGISTRY: ghcr.io
