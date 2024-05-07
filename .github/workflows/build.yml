@@ -1,0 +1,32 @@
+name: Build
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build_container:
+    needs: check_release
+    runs-on: ubuntu-20.04
+    env:
+      REGISTRY: ghcr.io
+      IMAGE: ${{ github.repository }}    
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      # - name: Install/Cache dependencies
+      #   run: |
+      #     sudo apt-get update > ${RUNNER_TEMP}/apt-update.log &&  
+      #     sudo apt-get -y install qemu-user-static >  ${RUNNER_TEMP}/apt-install.log
+      - name: Build container image
+        id: build_image
+        uses: redhat-actions/buildah-build@v2
+        with:
+          archs: amd64
+          image: ${{ env.IMAGE }}
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE }}:latest
+          containerfiles: Containerfile
+          layers: false
+          oci: true
