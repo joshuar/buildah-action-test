@@ -13,4 +13,5 @@ path-include=/usr/share/doc/*/copyright
 path-include=/usr/share/doc/*/changelog.*
 EOF
 
+RUN cat /etc/dpkg/dpkg.cfg.d/excludes
 

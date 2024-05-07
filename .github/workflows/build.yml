@@ -5,7 +5,7 @@ on:
     branches: [ main ]
 
 jobs:
-  build_container:
+  cat_heredoc:
     runs-on: ubuntu-20.04
     env:
       REGISTRY: ghcr.io
@@ -15,10 +15,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      # - name: Install/Cache dependencies
-      #   run: |
-      #     sudo apt-get update > ${RUNNER_TEMP}/apt-update.log &&  
-      #     sudo apt-get -y install qemu-user-static >  ${RUNNER_TEMP}/apt-install.log
       - name: Build container image
         id: build_image
         uses: redhat-actions/buildah-build@v2
@@ -26,6 +22,27 @@ jobs:
           archs: amd64
           image: ${{ env.IMAGE }}
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE }}:latest
-          containerfiles: Containerfile
+          containerfiles: cat_heredoc.Containerfile
+          layers: false
+          oci: true
+
+  run_heredoc:
+    runs-on: ubuntu-20.04
+    env:
+      REGISTRY: ghcr.io
+      IMAGE: ${{ github.repository }}    
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Build container image
+        id: build_image
+        uses: redhat-actions/buildah-build@v2
+        with:
+          archs: amd64
+          image: ${{ env.IMAGE }}
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE }}:latest
+          containerfiles: run_heredoc.Containerfile
           layers: false
           oci: true
